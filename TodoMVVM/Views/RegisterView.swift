@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @State var username: String = ""
-    @State var password: String = ""
     @State var confirmPassword: String = ""
     @State var navigateToLogin: Bool = false
+    @ObservedObject var viewModel: AuthViewModel = AuthViewModel() // is it ok to use the same viewModel for login and register???
     var body: some View {
         NavigationStack {
             Form {
@@ -20,8 +19,8 @@ struct RegisterView: View {
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 16)
 
-                TextField("Username", text: $username)
-                SecureField("Password", text: $password)
+                TextField("Username", text: $viewModel.email)
+                SecureField("Password", text: $viewModel.password)
                 SecureField("Confirm Password", text: $confirmPassword)
                 HStack {
                     Button {
@@ -42,7 +41,7 @@ struct RegisterView: View {
             .navigationTitle("Create a Todo account")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(isPresented: $navigateToLogin) {
-                LoginView(username: username)
+                LoginView(viewModel: viewModel) // is it ok to pass viewModel like this???
             }
         }
         

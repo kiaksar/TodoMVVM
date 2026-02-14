@@ -11,7 +11,7 @@ import SwiftUI
 struct TodoMVVMApp: App {
     var body: some Scene {
         WindowGroup {
-            TodoListView()
+            LoginView()
         }
     }
 }

@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct LoginView: View {
-    @State var username: String = ""
-    @State var password: String = ""
     @State var navigateToRegister: Bool = false
+    @ObservedObject var viewModel: AuthViewModel = AuthViewModel()
     var body: some View {
         NavigationStack {
             Form {
@@ -20,8 +19,8 @@ struct LoginView: View {
                     .frame(maxWidth: .infinity, alignment: .center) // center horizontally
                     .padding(.vertical, 16)
                 
-                TextField("Username", text: $username)
-                SecureField("Password", text: $password)
+                TextField("Username", text: $viewModel.email).textInputAutocapitalization(.never).autocorrectionDisabled(true).keyboardType(.emailAddress)
+                SecureField("Password", text: $viewModel.password)
                 HStack {
                     Button {
                         navigateToRegister = true
@@ -31,6 +30,9 @@ struct LoginView: View {
                     Spacer()
                     Button {
                         print("Button")
+                        Task {
+                            await viewModel.login()
+                        }
                     } label: {
                         Text("Login")
                     }
@@ -41,7 +43,11 @@ struct LoginView: View {
             .navigationTitle("Login to Todo")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(isPresented: $navigateToRegister) {
-                RegisterView(username: username)
+                RegisterView(viewModel: viewModel) // is it true to pass viewModels like this???
+            }
+            .navigationDestination(isPresented: $viewModel.isLoggedIn) {
+                TodoListView()
+                // is this a good place to handle navigation if user is logged in???
             }
         }
         
