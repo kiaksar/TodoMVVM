@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CE26AB6B2F41C53700CC7CD2 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = CE26AB6A2F41C53700CC7CD2 /* Alamofire */; };
+		CE26AB6E2F41C71000CC7CD2 /* PapyrusAlamofire in Frameworks */ = {isa = PBXBuildFile; productRef = CE26AB6D2F41C71000CC7CD2 /* PapyrusAlamofire */; };
+		CE26AB702F41C71000CC7CD2 /* PapyrusCore in Frameworks */ = {isa = PBXBuildFile; productRef = CE26AB6F2F41C71000CC7CD2 /* PapyrusCore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		CE0AD48E2F387B4800D86ED7 /* TodoMVVM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoMVVM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +29,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE26AB702F41C71000CC7CD2 /* PapyrusCore in Frameworks */,
+				CE26AB6E2F41C71000CC7CD2 /* PapyrusAlamofire in Frameworks */,
+				CE26AB6B2F41C53700CC7CD2 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +74,9 @@
 			);
 			name = TodoMVVM;
 			packageProductDependencies = (
+				CE26AB6A2F41C53700CC7CD2 /* Alamofire */,
+				CE26AB6D2F41C71000CC7CD2 /* PapyrusAlamofire */,
+				CE26AB6F2F41C71000CC7CD2 /* PapyrusCore */,
 			);
 			productName = TodoMVVM;
 			productReference = CE0AD48E2F387B4800D86ED7 /* TodoMVVM.app */;
@@ -94,6 +106,10 @@
 			);
 			mainGroup = CE0AD4852F387B4800D86ED7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CE26AB692F41C53700CC7CD2 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				CE26AB6C2F41C71000CC7CD2 /* XCRemoteSwiftPackageReference "papyrus" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE0AD48F2F387B4800D86ED7 /* Products */;
 			projectDirPath = "";
@@ -328,6 +344,43 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CE26AB692F41C53700CC7CD2 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.11.1;
+			};
+		};
+		CE26AB6C2F41C71000CC7CD2 /* XCRemoteSwiftPackageReference "papyrus" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/joshuawright11/papyrus.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CE26AB6A2F41C53700CC7CD2 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE26AB692F41C53700CC7CD2 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		CE26AB6D2F41C71000CC7CD2 /* PapyrusAlamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE26AB6C2F41C71000CC7CD2 /* XCRemoteSwiftPackageReference "papyrus" */;
+			productName = PapyrusAlamofire;
+		};
+		CE26AB6F2F41C71000CC7CD2 /* PapyrusCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE26AB6C2F41C71000CC7CD2 /* XCRemoteSwiftPackageReference "papyrus" */;
+			productName = PapyrusCore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE0AD4862F387B4800D86ED7 /* Project object */;
 }

@@ -13,13 +13,15 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // Make the checklist image big and centered
                 Image(systemName: "checklist")
-                    .font(.system(size: 80, weight: .regular)) // bigger symbol
-                    .frame(maxWidth: .infinity, alignment: .center) // center horizontally
+                    .font(.system(size: 80, weight: .regular))
+                    .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 16)
                 
-                TextField("Username", text: $viewModel.email).textInputAutocapitalization(.never).autocorrectionDisabled(true).keyboardType(.emailAddress)
+                TextField("Username", text: $viewModel.email)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
+                    .keyboardType(.emailAddress)
                 SecureField("Password", text: $viewModel.password)
                 HStack {
                     Button {
@@ -40,14 +42,28 @@ struct LoginView: View {
                 }
                 
             }
+            .alert(viewModel.errorMessage ?? "oops", isPresented: .constant(viewModel.errorMessage != nil), actions: {
+                Button {
+                    viewModel.resetError()
+                } label: {
+                    Text("OK")
+                }
+            })
             .navigationTitle("Login to Todo")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(isPresented: $navigateToRegister) {
-                RegisterView(viewModel: viewModel) // is it true to pass viewModels like this???
+                RegisterView(viewModel: viewModel)
             }
             .navigationDestination(isPresented: $viewModel.isLoggedIn) {
                 TodoListView()
-                // is this a good place to handle navigation if user is logged in???
+            }
+            .disabled(viewModel.isLoading)
+            .overlay {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(1.5)
+                }
             }
         }
         

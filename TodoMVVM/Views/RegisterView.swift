@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @State var confirmPassword: String = ""
     @State var navigateToLogin: Bool = false
     @ObservedObject var viewModel: AuthViewModel = AuthViewModel() // is it ok to use the same viewModel for login and register???
     var body: some View {
@@ -18,10 +17,13 @@ struct RegisterView: View {
                     .font(.system(size: 80, weight: .regular))
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 16)
-
+                
                 TextField("Username", text: $viewModel.email)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
+                    .keyboardType(.emailAddress)
                 SecureField("Password", text: $viewModel.password)
-                SecureField("Confirm Password", text: $confirmPassword)
+                SecureField("Confirm Password", text: $viewModel.confirmPassword)
                 HStack {
                     Button {
                         navigateToLogin = true
@@ -31,17 +33,35 @@ struct RegisterView: View {
                     Spacer()
                     Button {
                         print("Button")
+                        Task {
+                            await viewModel.register()
+                        }
                     } label: {
                         Text("Register")
                     }
                     .buttonStyle(.bordered)
                 }
-
+                
             }
+            .alert(viewModel.errorMessage ?? "oops", isPresented: .constant(viewModel.errorMessage != nil), actions: {
+                Button {
+                    viewModel.resetError()
+                } label: {
+                    Text("Ok")
+                }
+            })
             .navigationTitle("Create a Todo account")
             .navigationBarTitleDisplayMode(.inline)
             .navigationDestination(isPresented: $navigateToLogin) {
-                LoginView(viewModel: viewModel) // is it ok to pass viewModel like this???
+                LoginView(viewModel: viewModel)
+            }
+            .disabled(viewModel.isLoading)
+            .overlay {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(1.5)
+                }
             }
         }
         

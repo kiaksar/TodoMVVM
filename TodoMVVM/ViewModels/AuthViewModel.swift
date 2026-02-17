@@ -11,6 +11,7 @@ import Combine
 protocol AuthViewModelProtocol: ObservableObject {
     var email: String { get set }
     var password: String { get set }
+    var confirmPassword: String {get set}
     var isLoading: Bool { get }
     var errorMessage: String? { get }
     var isLoggedIn: Bool { get set }
@@ -23,14 +24,15 @@ protocol AuthViewModelProtocol: ObservableObject {
 class AuthViewModel: AuthViewModelProtocol {
     @Published var email: String = ""
     @Published var password: String = ""
+    @Published var confirmPassword: String = ""
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var errorMessage: String?
     @Published var isLoggedIn: Bool = false
-
-    private let authService: AuthServiceProtocol
-
-    init(authService: AuthServiceProtocol = AuthServiceImpl()) {
-        self.authService = authService
+    
+    private let authUseCase: AuthUseCaseProtocol
+    
+    init(authUseCase: AuthUseCaseProtocol = AuthUseCaseImpl()) {
+        self.authUseCase = authUseCase
     }
     
     @MainActor
@@ -42,12 +44,15 @@ class AuthViewModel: AuthViewModelProtocol {
         isLoading = true
         errorMessage = nil
         do {
-            // where should the AuthUseCase be used???
-            print("doing the loggin with email \(email) and password \(password)")
-            let _ = try await authService.login(email: email, password: password)
-            isLoggedIn = true
-            // navigate to login here or in the view???
+            print("doing the login with email \(email) and password \(password)")
+            let res = try await authUseCase.login(email: email, password: password)
+            if res.status == .success {
+                isLoggedIn = true
+            } else {
+                errorMessage = res.message
+            }
         } catch {
+            print("error in catch of the login viewModel \(error)")
             errorMessage = (error as? LocalizedError)?.errorDescription ?? "Login failed. Please try again."
             isLoggedIn = false
         }
@@ -60,14 +65,22 @@ class AuthViewModel: AuthViewModelProtocol {
             errorMessage = "Email and password are required."
             return
         }
+        guard password == confirmPassword else {
+            errorMessage = "Password and confirm password do not match."
+            return
+        }
         isLoading = true
         errorMessage = nil
         do {
-            let _ = try await authService.register(email: email, password: password)
-            isLoggedIn = true
-            // navigate to login here or in the view???
+            let res = try await authUseCase.register(email: email, password: password)
+            if res.status == .success {
+                isLoggedIn = true
+            } else {
+                errorMessage = res.message
+            }
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription ?? "Registration failed. Please try again."
+            print("error in catch of the register viewModel \(error)")
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? "Registration failed. Plsease try again."
             isLoggedIn = false
         }
         isLoading = false
