@@ -11,45 +11,44 @@ struct TodoListView: View {
     
     @StateObject private var viewModel: TodoViewModel = .init()
     @State var showAddTodo: Bool = false
+    @EnvironmentObject private var router: Router
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                List {
-                    ForEach(viewModel.filteredTodos) { todo in
-                        Button {
-                            viewModel.toggleCompletion(for: todo.id)
-                        } label: {
-                            Text(todo.title)
-                                .strikethrough(todo.isCompleted)
-                        }
-                        .swipeActions {
-                            Button {
-                                viewModel.deleteTodo(withId: todo.id)
-                            } label: {
-                                Image(systemName: "trash")
-                            }
-                        }
+        VStack {
+            List {
+                ForEach(viewModel.filteredTodos) { todo in
+                    Button {
+                        viewModel.toggleCompletion(for: todo.id)
+                    } label: {
+                        Text(todo.title)
+                            .strikethrough(todo.isCompleted)
                     }
-                }
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
+                    .swipeActions {
                         Button {
-                            showAddTodo = true
+                            viewModel.deleteTodo(withId: todo.id)
                         } label: {
-                            Image(systemName: "plus")
+                            Image(systemName: "trash")
                         }
                     }
                 }
             }
-            .onAppear {
-                viewModel.loadSampleDate()
-            }
-            .sheet(isPresented: $showAddTodo) {
-                AddTodoView(viewModel: viewModel)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAddTodo = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
             }
         }
-        
+        .navigationBarBackButtonHidden()
+        .onAppear {
+            viewModel.loadSampleDate()
+        }
+        .sheet(isPresented: $showAddTodo) {
+            AddTodoView(viewModel: viewModel)
+        }
     }
 }
 

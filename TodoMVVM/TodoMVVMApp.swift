@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct TodoMVVMApp: App {
+    
+    @StateObject private var router = Router()
+    
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            ContentView()
+                .environmentObject(router)
         }
     }
 }

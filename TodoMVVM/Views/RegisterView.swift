@@ -9,62 +9,75 @@ import SwiftUI
 
 struct RegisterView: View {
     @State var navigateToLogin: Bool = false
-    @ObservedObject var viewModel: AuthViewModel = AuthViewModel() // is it ok to use the same viewModel for login and register???
+    @ObservedObject var viewModel: AuthViewModel = AuthViewModel()
+    @EnvironmentObject private var router: Router
+    
+    let passedEmail: String?
+    
+    init(passedEmail: String? = nil) {
+        self.passedEmail = passedEmail
+    }
+    
     var body: some View {
-        NavigationStack {
-            Form {
-                Image(systemName: "checklist")
-                    .font(.system(size: 80, weight: .regular))
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 16)
-                
-                TextField("Username", text: $viewModel.email)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled(true)
-                    .keyboardType(.emailAddress)
-                SecureField("Password", text: $viewModel.password)
-                SecureField("Confirm Password", text: $viewModel.confirmPassword)
-                HStack {
-                    Button {
-                        navigateToLogin = true
-                    } label: {
-                        Text("Already have an account? Login")
-                    }
-                    Spacer()
-                    Button {
-                        print("Button")
-                        Task {
-                            await viewModel.register()
-                        }
-                    } label: {
-                        Text("Register")
-                    }
-                    .buttonStyle(.bordered)
-                }
-                
-            }
-            .alert(viewModel.errorMessage ?? "oops", isPresented: .constant(viewModel.errorMessage != nil), actions: {
+        Form {
+            Image(systemName: "checklist")
+                .font(.system(size: 80, weight: .regular))
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 16)
+            
+            TextField("Username", text: $viewModel.email)
+                .textInputAutocapitalization(.never)
+                .autocorrectionDisabled(true)
+                .keyboardType(.emailAddress)
+            SecureField("Password", text: $viewModel.password)
+            SecureField("Confirm Password", text: $viewModel.confirmPassword)
+            HStack {
                 Button {
-                    viewModel.resetError()
+                    router.popToRoot()
                 } label: {
-                    Text("Ok")
+                    Text("Already have an account? Login")
                 }
-            })
-            .navigationTitle("Create a Todo account")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationDestination(isPresented: $navigateToLogin) {
-                LoginView(viewModel: viewModel)
+                Spacer()
+                Button {
+                    print("Button")
+                    Task {
+                        await viewModel.register()
+                    }
+                } label: {
+                    Text("Register")
+                }
+                .buttonStyle(.bordered)
             }
-            .disabled(viewModel.isLoading)
-            .overlay {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .scaleEffect(1.5)
-                }
+            
+        }
+        .onAppear(perform: {
+            if let passedEmail = passedEmail {
+                viewModel.email = passedEmail
+            }
+        })
+        .alert(viewModel.errorMessage ?? "oops", isPresented: .constant(viewModel.errorMessage != nil), actions: {
+            Button {
+                viewModel.resetError()
+            } label: {
+                Text("Ok")
+            }
+        })
+        .navigationTitle("Create a Todo account")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden()
+        .onChange(of: viewModel.isLoggedIn, { oldValue, newValue in
+            if newValue {
+                router.navigateToRootAndPush(.todoList)
+            }
+        })
+        .disabled(viewModel.isLoading)
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .scaleEffect(1.5)
             }
         }
-        
     }
 }
 
