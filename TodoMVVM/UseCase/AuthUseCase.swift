@@ -12,6 +12,7 @@ enum AuthStatus {
 }
 
 protocol AuthUseCaseProtocol {
+    var tokenRepository: TokenRepositoryProtocol { get }
     func login (email: String, password: String) async throws -> AuthMessage
     func register (email: String, password: String) async throws -> AuthMessage
 }
@@ -22,10 +23,18 @@ struct AuthMessage {
 }
 
 class AuthUseCaseImpl: AuthUseCaseProtocol {
+    
+    internal let tokenRepository: TokenRepositoryProtocol
+    
+    init(tokenRepository: TokenRepositoryProtocol = TokenRepositoryImpl()) {
+        self.tokenRepository = tokenRepository
+    }
+    
     func login (email: String, password: String) async throws -> AuthMessage {
         print("inside AuthUseCaseImpl.login")
         let res = try await AuthRemoteRepositoryImpl().login(email: email, password: password)
-        if res is LoginResponse {
+        if let loginResponse = res as? LoginResponse {
+            try tokenRepository.saveTokens(accessToken: loginResponse.access, refreshToken: loginResponse.refresh)
             return AuthMessage(message: "logged in successfully", status: .success)
         } else if let loginReject = res as? LoginReject {
             print("reject in AuthUseCaseImpl.login \(loginReject)")
@@ -50,4 +59,3 @@ class AuthUseCaseImpl: AuthUseCaseProtocol {
         }
     }
 }
-

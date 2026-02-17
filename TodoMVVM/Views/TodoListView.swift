@@ -45,6 +45,8 @@ struct TodoListView: View {
         .navigationBarBackButtonHidden()
         .onAppear {
             viewModel.loadSampleDate()
+            print("access token is \(TokenRepositoryImpl().getAccessToken() ?? "none")")
+            print("refresh token is \(TokenRepositoryImpl().getRefreshToken() ?? "none")")
         }
         .sheet(isPresented: $showAddTodo) {
             AddTodoView(viewModel: viewModel)
